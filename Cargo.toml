@@ -14,6 +14,10 @@ doctest = false
 inherits = "release"
 debug = 1
 
+[profile.dev.package."*"]
+opt-level = 3
+debug = false
+
 [features]
 dhat-heap = ["dhat"]
 today = ["chrono"]
@@ -28,3 +32,21 @@ pico-args = "0.5.0"
 tinyjson = "2.5.1"
 
 # Solution dependencies
+rayon = "1.10.0"
+hashbrown = "0.15.2"
+itertools = "0.13.0"
+ndarray = "0.16.1"
+# This crate has not had a release since 2022, so we need the main branch to match with the `ndarray` version
+ndarray-linalg = { git = "https://github.com/rust-ndarray/ndarray-linalg", features = [
+    "openblas-static",
+] }
+num = "0.4.3"
+petgraph = "0.6.5"
+regex = "1.11.1"
+strum = "0.26.3"
+strum_macros = "0.26.4"
+cached = "0.54.0"
+
+
+[dev-dependencies]
+rstest = "0.23.0"

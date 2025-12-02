@@ -1,4 +1,4 @@
-use num::{Integer, iter::Range, traits::Euclid};
+use num::Integer;
 
 advent_of_code::solution!(1);
 
@@ -35,7 +35,7 @@ pub fn part_two(input: &str) -> Option<u64> {
     let mut dial: i32 = 50;
     let mut zero_count: u64 = 0;
     for line in input.lines() {
-        let mut change: i32 = line[1..].parse().unwrap();
+        let change: i32 = line[1..].parse().unwrap();
         let dir = line.chars().next().unwrap();
         for _ in 0..change {
             inc_count(&mut dial, &mut zero_count, 1, dir);

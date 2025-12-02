@@ -1,4 +1,4 @@
-use num::{Integer, traits::Euclid};
+use num::{Integer, iter::Range, traits::Euclid};
 
 advent_of_code::solution!(1);
 
@@ -6,18 +6,29 @@ pub fn part_one(input: &str) -> Option<u64> {
     let mut dial: i32 = 50;
     let mut zero_count = 0;
     for line in input.lines() {
-        let amount: i32 = line[1..].parse().unwrap();
-        if line.chars().next().unwrap() == 'R' {
-            dial += amount;
-        } else {
-            dial -= amount;
+        let mut change: i32 = line[1..].parse().unwrap();
+        let dir = line.chars().next().unwrap();
+        if dir == 'L' {
+            change *= -1;
         }
+        dial += change;
         dial %= 100;
         if dial == 0 {
             zero_count += 1;
-        }
+        };
     }
     Some(zero_count)
+}
+
+fn inc_count(dial: &mut i32, zero_count: &mut u64, mut change: i32, dir: char) {
+    if dir == 'L' {
+        change *= -1;
+    }
+    *dial += change;
+    *dial %= 100;
+    if *dial == 0 {
+        *zero_count += 1;
+    }
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
@@ -25,18 +36,23 @@ pub fn part_two(input: &str) -> Option<u64> {
     let mut zero_count: u64 = 0;
     for line in input.lines() {
         let mut change: i32 = line[1..].parse().unwrap();
-        if line.chars().next().unwrap() == 'L' {
-            if dial == 0 {
-                zero_count -= 1;
-            }
-            change *= -1;
+        let dir = line.chars().next().unwrap();
+        for _ in 0..change {
+            inc_count(&mut dial, &mut zero_count, 1, dir);
         }
-        dial += dbg!(change);
-        let turns = turns(dbg!(dial));
-        println!("turn: {turns:?}");
-        zero_count += turns;
-        // zero_count += dbg!(dial.div_rem_euclid(&100).0).unsigned_abs() as u64;
-        dial = dial.mod_floor(&100);
+        // if line.chars().next().unwrap() == 'L' {
+        //     change *= -1;
+        // }
+
+        // dial += dbg!(change);
+        // if dial == 0 {
+        //     zero_count -= 1;
+        // }
+        // let turns = turns(dbg!(dial));
+        // println!("turn: {turns:?}");
+        // zero_count += turns;
+        // // zero_count += dbg!(dial.div_rem_euclid(&100).0).unsigned_abs() as u64;
+        // dial = dial.mod_floor(&100);
     }
     Some(zero_count)
 }

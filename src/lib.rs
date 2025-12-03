@@ -1,11 +1,11 @@
 pub mod template;
 use std::{
-    fmt::Display,
+    fmt::{Debug, Display},
     ops::{Add, Mul, Neg, Sub},
 };
 
-use ndarray::{Array, Array2, Order};
 use Direction::*;
+use ndarray::{Array, Array2, ArrayRef1, ArrayRef2, Order};
 
 // Use this file to add helper functions and additional modules.
 
@@ -22,13 +22,17 @@ pub fn get_adjacent_positions(
         .filter_map(move |dir| (pos + *dir).in_bounds(bounds))
 }
 
-pub fn print_matrix(matrix: &Array2<char>) {
+pub fn print_matrix<T: Debug>(matrix: &ArrayRef2<T>) {
     for row in matrix.outer_iter() {
-        for c in row {
-            print!("{}", c);
-        }
-        println!();
+        print_row(&row);
     }
+}
+
+pub fn print_row<T: Debug>(row: &ArrayRef1<T>) {
+    for c in row.iter() {
+        print!("{:?}", c);
+    }
+    println!();
 }
 
 pub fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {

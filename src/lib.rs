@@ -22,6 +22,26 @@ pub fn get_adjacent_positions(
         .filter_map(move |dir| (pos + *dir).in_bounds(bounds))
 }
 
+pub fn get_diagonal_positions(
+    pos: impl Into<Pos<usize>>,
+    bounds: impl Into<Pos<usize>>,
+) -> impl Iterator<Item = Pos<usize>> + Clone {
+    let pos = pos.into();
+    let bounds = bounds.into();
+    [(North, West), (North, East), (South, West), (South, East)]
+        .iter()
+        .filter_map(move |(dir_vert, dir_horz)| (pos + *dir_vert + *dir_horz).in_bounds(bounds))
+}
+
+pub fn get_surrounding_positions(
+    pos: impl Into<Pos<usize>>,
+    bounds: impl Into<Pos<usize>>,
+) -> impl Iterator<Item = Pos<usize>> + Clone {
+    let pos = pos.into();
+    let bounds = bounds.into();
+    get_adjacent_positions(pos, bounds).chain(get_diagonal_positions(pos, bounds))
+}
+
 pub fn print_matrix<T: Debug>(matrix: &ArrayRef2<T>) {
     for row in matrix.outer_iter() {
         print_row(&row);

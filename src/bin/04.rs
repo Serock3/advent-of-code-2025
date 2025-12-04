@@ -1,16 +1,42 @@
-use advent_of_code::{parse_char_matrix, print_matrix};
+use advent_of_code::{
+    Pos, get_adjacent_positions, get_surrounding_positions, parse_char_matrix, print_matrix,
+};
 use ndarray::Array2;
+use ndarray_ndimage::{PadMode, pad};
 
 advent_of_code::solution!(4);
 
 pub fn part_one(input: &str) -> Option<u64> {
     let matrix = parse_char_matrix(input);
 
-    for window in matrix.windows((3, 3)) {
-        println!("");
-        print_matrix(&window);
-    }
-    None
+    let res = matrix
+        .indexed_iter()
+        .filter(|(_, c)| **c == '@')
+        .map(|(pos, _)| {
+            let adjacent_positions = get_surrounding_positions(pos, matrix.dim());
+            let num_adjacent = adjacent_positions
+                .filter(|pos| matrix[(pos.0, pos.1)] == '@')
+                .count();
+            println!("{:?}: {}", pos, num_adjacent);
+            num_adjacent < 4
+        })
+        .count();
+
+    // let padding_config = vec![(1, 1), (1, 1)];
+
+    // for window in pad(&matrix, &padding_config, PadMode::Constant(0)).windows((3, 3)) {
+    //     println!("");
+    //     // print_matrix(&window);
+    //     //
+    //     let num_paper = window
+    //         .flatten()
+    //         .iter()
+    //         .enumerate()
+    //         .filter(|(i, el)| **el == '@' && *i % 5 != 0)
+    //         .count();
+    //     println!("{:?}", num_paper);
+    // }
+    Some(res as u64)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {

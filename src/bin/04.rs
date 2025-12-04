@@ -1,9 +1,15 @@
-use advent_of_code::parse_char_matrix;
+use advent_of_code::{parse_char_matrix, print_matrix};
+use ndarray::Array2;
 
 advent_of_code::solution!(4);
 
 pub fn part_one(input: &str) -> Option<u64> {
     let matrix = parse_char_matrix(input);
+
+    for window in matrix.windows((3, 3)) {
+        println!("");
+        print_matrix(&window);
+    }
     None
 }
 

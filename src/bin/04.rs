@@ -12,9 +12,8 @@ pub fn part_one(input: &str) -> Option<u64> {
     let res = matrix
         .indexed_iter()
         .filter(|(_, c)| **c == '@')
-        .map(|(pos, _)| {
-            let adjacent_positions = get_surrounding_positions(pos, matrix.dim());
-            let num_adjacent = adjacent_positions
+        .filter(|(pos, _)| {
+            let num_adjacent = get_surrounding_positions(*pos, matrix.dim())
                 .filter(|pos| matrix[(pos.0, pos.1)] == '@')
                 .count();
             println!("{:?}: {}", pos, num_adjacent);

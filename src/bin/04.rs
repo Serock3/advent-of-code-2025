@@ -1,8 +1,5 @@
-use advent_of_code::{
-    Pos, get_adjacent_positions, get_surrounding_positions, parse_char_matrix, print_matrix,
-};
+use advent_of_code::{get_surrounding_positions, parse_char_matrix};
 use ndarray::Array2;
-use ndarray_ndimage::{PadMode, pad};
 
 advent_of_code::solution!(4);
 
@@ -16,7 +13,7 @@ pub fn part_one(input: &str) -> Option<u64> {
             let num_adjacent = get_surrounding_positions(*pos, matrix.dim())
                 .filter(|pos| matrix[(pos.0, pos.1)] == '@')
                 .count();
-            println!("{:?}: {}", pos, num_adjacent);
+            // println!("{:?}: {}", pos, num_adjacent);
             num_adjacent < 4
         });
 
@@ -33,7 +30,7 @@ pub fn part_two(input: &str) -> Option<u64> {
             break;
         }
         removed_balls += removable_balls.len();
-        for (ball_pos, prev_char) in removable_balls {
+        for (ball_pos, _prev_char) in removable_balls {
             // println!("Removing '{}' at {:?}", prev_char, ball_pos);
             matrix[ball_pos] = '.';
         }

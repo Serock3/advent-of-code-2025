@@ -28,29 +28,33 @@ pub fn part_two(input: &str) -> Option<u64> {
 
     let mut removed_balls = 0;
     loop {
-        let removable_balls = matrix
-            .indexed_iter()
-            .map(|(pos, &char)| (pos, char))
-            .filter(|(_, c)| *c == '@')
-            .filter(|(pos, _)| {
-                let num_adjacent = get_surrounding_positions(*pos, matrix.dim())
-                    .filter(|pos| matrix[(pos.0, pos.1)] == '@')
-                    .count();
-                println!("{:?}: {}", pos, num_adjacent);
-                num_adjacent < 4
-            })
-            .collect::<Vec<_>>();
+        let removable_balls = fun_name(&matrix);
         if removable_balls.is_empty() {
             break;
         }
         removed_balls += removable_balls.len();
         for (ball_pos, prev_char) in removable_balls {
-            println!("Removing '{}' at {:?}", prev_char, ball_pos);
+            // println!("Removing '{}' at {:?}", prev_char, ball_pos);
             matrix[ball_pos] = '.';
         }
     }
 
     Some(removed_balls as u64)
+}
+
+fn fun_name(matrix: &Array2<char>) -> Vec<((usize, usize), char)> {
+    matrix
+        .indexed_iter()
+        .map(|(pos, &char)| (pos, char))
+        .filter(|(_, c)| *c == '@')
+        .filter(|(pos, _)| {
+            let num_adjacent = get_surrounding_positions(*pos, matrix.dim())
+                .filter(|pos| matrix[(pos.0, pos.1)] == '@')
+                .count();
+            // println!("{:?}: {}", pos, num_adjacent);
+            num_adjacent < 4
+        })
+        .collect::<Vec<_>>()
 }
 
 #[cfg(test)]

@@ -52,7 +52,13 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
         ranges_map.insert(range.start, range.clone());
     }
-    let sum: usize = ranges_map.into_iter().map(|(_, range)| range.count()).sum();
+    let sum: usize = ranges_map
+        .clone()
+        .into_iter()
+        .map(|(_, range)| RangeInclusive::new(range.start, range.end).count())
+        .sum();
+
+    println!("{:?}", ranges_map);
 
     Some(sum as u64)
 }

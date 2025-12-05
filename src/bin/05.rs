@@ -22,7 +22,7 @@ fn parse_input(input: &str) -> (Vec<RangeInclusive<usize>>, Vec<usize>) {
     let ranges: Vec<RangeInclusive<usize>> = ranges
         .lines()
         .map(|l| {
-            let (start, end) = l.split_once('-').unwrap().into();
+            let (start, end) = l.split_once('-').unwrap();
             let start = start.parse::<usize>().expect("Could not parse number");
             let end = end.parse::<usize>().expect("Could not parse number");
             RangeInclusive::new(start, end)
@@ -39,26 +39,27 @@ fn parse_input(input: &str) -> (Vec<RangeInclusive<usize>>, Vec<usize>) {
 pub fn part_two(input: &str) -> Option<u64> {
     let (ranges_input, _) = input.split_once("\n\n").unwrap();
     let ranges = ranges_input.lines().map(|l| {
-        let (start, end) = l.split_once('-').unwrap().into();
+        let (start, end) = l.split_once('-').unwrap();
         let start = start.parse::<usize>().expect("Could not parse number");
         let end = end.parse::<usize>().expect("Could not parse number");
-        Range { start, end }
+        Range {
+            start,
+            end: end + 1,
+        }
     });
 
     let mut ranges_map: BTreeMap<usize, Range<usize>> = BTreeMap::new();
     for mut range in ranges {
-        for (_, other) in &mut ranges_map {
+        for other in ranges_map.values_mut() {
             remove_overlap(&mut range, other);
         }
         ranges_map.insert(range.start, range.clone());
     }
     let sum: usize = ranges_map
         .clone()
-        .into_iter()
-        .map(|(_, range)| RangeInclusive::new(range.start, range.end).count())
+        .into_values()
+        .map(|range| range.count())
         .sum();
-
-    println!("{:?}", ranges_map);
 
     Some(sum as u64)
 }
@@ -69,34 +70,12 @@ fn remove_overlap(range_a: &mut Range<usize>, range_b: &mut Range<usize>) {
     } else {
         (range_b, range_a)
     };
-
-    // a
-    // |--|
-    //      |---|
-    //
-    if first_range.end < second_range.start {
-        return;
-    }
-    // b
     // |---|
     //    |---|
-    else if first_range.end >= second_range.start {
-        second_range.start = first_range.end + 1;
-    }
-    // d
-    // |-----|
-    //   |-|
-    else if first_range.end > second_range.start {
-        // make the range empty
-        second_range.end = second_range.start
+    if first_range.end > second_range.start {
+        second_range.start = first_range.end;
     }
 }
-
-// fn count_overlap(a: RangeInclusive<usize>, b: &RangeInclusive<usize>) -> Option<RangeInclusive<usize>> {
-//     let start = a.start().max(b.start());
-//     let end = a.end().min(b.end());
-//     if start > end { 0 } else { end - start + 1 }
-// }
 
 #[cfg(test)]
 mod tests {

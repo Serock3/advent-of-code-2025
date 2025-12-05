@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use std::{
-    collections::{BTreeMap, BTreeSet},
+    collections::BTreeMap,
     ops::{Range, RangeInclusive},
 };
 
@@ -42,40 +42,48 @@ pub fn part_two(input: &str) -> Option<u64> {
         let (start, end) = l.split_once('-').unwrap().into();
         let start = start.parse::<usize>().expect("Could not parse number");
         let end = end.parse::<usize>().expect("Could not parse number");
-        RangeInclusive::new(start, end)
+        Range { start, end }
     });
 
-    let mut ranges_map: BTreeMap<usize, RangeInclusive<usize>> = BTreeMap::new();
+    let mut ranges_map: BTreeMap<usize, Range<usize>> = BTreeMap::new();
     for mut range in ranges {
-        for (_, other) in &ranges_map {
-            // todo: use .range(&range)
-            if let Some(subtracted_range) = range_difference(&range, &other) {
-                range = subtracted_range;
-            } else {
-                // Range was fully contained within another range
-                continue;
-            }
+        for (_, other) in &mut ranges_map {
+            remove_overlap(&mut range, other);
         }
-        ranges_map.insert(*range.start(), range.clone());
+        ranges_map.insert(range.start, range.clone());
     }
     let sum: usize = ranges_map.into_iter().map(|(_, range)| range.count()).sum();
 
     Some(sum as u64)
 }
 
-fn range_difference(
-    minuend: &RangeInclusive<usize>,
-    subtrahend: &RangeInclusive<usize>,
-) -> Option<RangeInclusive<usize>> {
-    let start = minuend.start().max(subtrahend.start());
-    let end = minuend.end().min(subtrahend.end());
-    if start > end {
-        0
+fn remove_overlap(range_a: &mut Range<usize>, range_b: &mut Range<usize>) {
+    let (first_range, second_range) = if range_a.start < range_b.start {
+        (range_a, range_b)
     } else {
-        end - start + 1
-    }
+        (range_b, range_a)
+    };
 
-    RangeInclusive
+    // a
+    // |--|
+    //      |---|
+    //
+    if first_range.end < second_range.start {
+        return;
+    }
+    // b
+    // |---|
+    //    |---|
+    else if first_range.end >= second_range.start {
+        second_range.start = first_range.end + 1;
+    }
+    // d
+    // |-----|
+    //   |-|
+    else if first_range.end > second_range.start {
+        // make the range empty
+        second_range.end = second_range.start
+    }
 }
 
 // fn count_overlap(a: RangeInclusive<usize>, b: &RangeInclusive<usize>) -> Option<RangeInclusive<usize>> {
@@ -97,6 +105,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(14));
     }
 }

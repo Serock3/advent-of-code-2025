@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::ops::{Range, RangeInclusive};
 
 use itertools::Itertools;
 
@@ -6,13 +6,13 @@ advent_of_code::solution!(5);
 
 pub fn part_one(input: &str) -> Option<u64> {
     let (ranges, ingredients) = input.split_once("\n\n").unwrap();
-    let ranges: Vec<Range<usize>> = ranges
+    let ranges: Vec<RangeInclusive<usize>> = ranges
         .lines()
         .map(|l| {
             let (start, end) = l.split_once('-').unwrap().into();
             let start = start.parse::<usize>().expect("Could not parse number");
             let end = end.parse::<usize>().expect("Could not parse number");
-            Range { start, end }
+            RangeInclusive::new(start, end)
         })
         .collect_vec();
 
